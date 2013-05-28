@@ -1,71 +1,37 @@
 import urllib
 import simplejson
 import types
-from random import randint
-
-
 import logging
+from random import randint
+from params import params as _params, \
+    taxonomy_params as _taxonomy_params
 log = logging.getLogger('pyshopzilla.ShopzillaAPI')
-
 hdlr = logging.StreamHandler()   # Logs to stderr by default
-formatter = logging.Formatter('\n--\n  SHOPZILLA / API %(asctime)s %(levelname)s %(message)s \n--\n')
+formatter = logging.Formatter('\n--\n  shop - api \
+    %(asctime)s %(levelname)s %(message)s \n--\n')
 hdlr.setFormatter(formatter)
 log.addHandler(hdlr)
 log.setLevel(logging.INFO)
 log.setLevel(logging.DEBUG)
 
-apikey = 'DEFAULT_API_KEY'
+apikey = getattr(settings, "SHOPZILLA_API_KEY", 'DEFAULT_API_KEY')
+JSON_RESPONSE_FILE = getattr(settings, "SHOPZILLA_RESPONSE_LOGFILE", "/tmp/shopzilla.log")
+DEBUG = getattr(settings, "DEBUG", False)
 
-JSON_RESPONSE_FILE = '/Users/mikelopez/Desktop/jsondumps'
-DEBUG = False
 
-
-class PyShopzillaException(Exception):
+class PyShopzillaError(Exception):
     """ 
-    Handle basic exceptions for PageProcessor 
+    Handle basic exceptions for Shopzilla class
     """
     def __init__(self, message):
-        Exception.__init__(self, message)
+      if DEBUG:
+        log.debug(message)
+      Exception.__init__(self, message)
 
 
 class ShopzillaAPI(object):
-  params = {
-    'apiKey': '',
-    'minRelevancyScore': '100',
-    'placementId': '1',
-    'resultsAttributeValues': '100',
-    'productIdType': '',
-    'results': '250',
-    'showAttributes': '',
-    'backfillResults': '0',
-    'showRawUrl': '',
-    'offersOnly': '',
-    'startOffers': '0',
-    'resultsOffers': 3,
-    'merchantId': '',
-    'attFilter': '',
-    'freeShipping': '',
-    'imageOnly': '',
-    'showProductAttributes': '',
-    'biddedOnly': '',
-    'start': '0',
-    'maxAge': '',
-    'minMarkdown': '',
-    'categoryId': '',
-    'productId': '',
-    'sort': 'relevancy_desc',
-    'format': 'json',
-    'zipCode': '',
-    'brandId': '',
-    'minPrice': '',
-    'keyword': '',
-    'maxPrice': '',
-    'callback': 'callback',
-    'attributeId': '',
-    'attWeights': '',
-    'publisherId': '69109',
-    'resultsAttribute': '20',
-  }
+  """ Base shopzilla api class """
+  params = _params
   url = 'http://catalog.bizrate.com/services/catalog/v1/us/product/?'
   response = None
   response_data = None
@@ -79,12 +45,12 @@ class ShopzillaAPI(object):
     Set the response to self.response
     """
     if not kwargs.get('apiKey'):
-      raise PyShopzillaException('Required: apiKey')
+      raise PyShopzilla('Required: apiKey')
 
     # set the params
     for i in kwargs.keys():
       if not i in self.params.keys():
-        raise PyShopzillaException('Parameter Sent %s is not in allowed' % i)
+        raise PyShopzilla('Parameter Sent %s is not in allowed' % i)
       self.params[i] = kwargs.get(i)
 
     params = urllib.urlencode(self.params)
@@ -110,6 +76,7 @@ class ShopzillaAPI(object):
     """ 
     Read the response from the api call 
     call .read() and get the response data 
+    overwritable debug
     """
     self.response_data = self.response.read()
     f = JSON_RESPONSE_FILE
@@ -128,14 +95,15 @@ class ShopzillaAPI(object):
     self.json_data = simplejson.loads(self.response_data)
 
 
+
 class ShopzillaTaxonomyAPI(ShopzillaAPI):
   """
   Subclass shopzillaapi class 
   overwrite params and url
   """
   url = 'http://catalog.bizrate.com/services/catalog/v1/us/taxonomy?'
-  params = {'apiKey': 'apiKey', 'publisherId':'', 'placementId': '1', 'categoryId': '1',\
-      'keyword': '', 'results': '50', 'format': 'json', 'sort': 'name_asc'}
+
+  params = _taxonomy_params
 
   def __init__(self, *args, **kwargs):
     self.url = 'http://catalog.bizrate.com/services/catalog/v1/us/taxonomy?'
@@ -146,6 +114,14 @@ class ShopzillaTaxonomyAPI(ShopzillaAPI):
     self.url = 'http://catalog.bizrate.com/services/catalog/v1/us/taxonomy?'
 
   def overwrite_params(self):
-    """ overwrite the params """
-    self.params = {'apiKey': '', 'publisherId':'', 'placementId': '1', 'categoryId': '1',\
-      'keyword': '', 'results': '50', 'format': 'json'}
+    """ overwrite the params 
+    -apiKey
+    -publisherId
+    -placementId
+    -categoryId
+    -keyword
+    -results
+    -format
+    -name_asc
+    """
+    self.params = _taxonomy_params

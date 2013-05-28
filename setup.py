@@ -3,7 +3,7 @@ import sys, os
 
 from distutils.core import setup
 setup(name='pyshopzilla',
-      version='4.2.0',
+      version='0.4',
       py_modules=['pyshopzilla'],
       author='Marcos Lopez',
       author_email='dev@scidentify.info',
