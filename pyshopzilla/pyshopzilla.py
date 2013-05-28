@@ -45,12 +45,12 @@ class ShopzillaAPI(object):
     Set the response to self.response
     """
     if not kwargs.get('apiKey'):
-      raise PyShopzilla('Required: apiKey')
+      raise PyShopzillaError('Required: apiKey')
 
     # set the params
     for i in kwargs.keys():
       if not i in self.params.keys():
-        raise PyShopzilla('Parameter Sent %s is not in allowed' % i)
+        raise PyShopzillaError('Parameter Sent %s is not in allowed' % i)
       self.params[i] = kwargs.get(i)
 
     params = urllib.urlencode(self.params)
@@ -106,7 +106,6 @@ class ShopzillaTaxonomyAPI(ShopzillaAPI):
   params = _taxonomy_params
 
   def __init__(self, *args, **kwargs):
-    self.url = 'http://catalog.bizrate.com/services/catalog/v1/us/taxonomy?'
     super(ShopzillaTaxonomyAPI, self).__init__(self, *args, **kwargs)
 
   def overwrite_url(self):
