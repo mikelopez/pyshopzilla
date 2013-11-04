@@ -129,6 +129,7 @@ class ShopzillaAPI(object):
       f = debug_filename
 
     if debug:
+      # pass debug_filename or JSON_RESPONSE_FILE if nothing passed
       o = open('%s/jsondump%s' % (f, randint(1111,99999)), 'w')
       o.write(self.response_data)
       o.close()
