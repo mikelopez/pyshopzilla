@@ -3,8 +3,7 @@ import simplejson
 import types
 import logging
 from random import randint
-from params import params as _params, \
-    taxonomy_params as _taxonomy_params
+
 log = logging.getLogger('pyshopzilla.ShopzillaAPI')
 hdlr = logging.StreamHandler()   # Logs to stderr by default
 formatter = logging.Formatter('\n--\n  shop - api \
@@ -18,6 +17,46 @@ apikey = getattr(settings, "SHOPZILLA_API_KEY", 'DEFAULT_API_KEY')
 JSON_RESPONSE_FILE = getattr(settings, "SHOPZILLA_RESPONSE_LOGFILE", "/tmp/shopzilla.log")
 DEBUG = getattr(settings, "DEBUG", False)
 
+_params = {
+    'apiKey': '',
+    'minRelevancyScore': '100',
+    'placementId': '1',
+    'resultsAttributeValues': '100',
+    'productIdType': '',
+    'results': '250',
+    'showAttributes': '',
+    'backfillResults': '0',
+    'showRawUrl': '',
+    'offersOnly': '',
+    'startOffers': '0',
+    'resultsOffers': 3,
+    'merchantId': '',
+    'attFilter': '',
+    'freeShipping': '',
+    'imageOnly': '',
+    'showProductAttributes': '',
+    'biddedOnly': '',
+    'start': '0',
+    'maxAge': '',
+    'minMarkdown': '',
+    'categoryId': '',
+    'productId': '',
+    'sort': 'relevancy_desc',
+    'format': 'json',
+    'zipCode': '',
+    'brandId': '',
+    'minPrice': '',
+    'keyword': '',
+    'maxPrice': '',
+    'callback': 'callback',
+    'attributeId': '',
+    'attWeights': '',
+    'publisherId': '69109',
+    'resultsAttribute': '20',
+  }
+
+_taxonomy_params = {'apiKey': 'apiKey', 'publisherId':'', 'placementId': '1', 'categoryId': '1',\
+      'keyword': '', 'results': '50', 'format': 'json', 'sort': 'name_asc'}
 
 class PyShopzillaError(Exception):
     """ 
