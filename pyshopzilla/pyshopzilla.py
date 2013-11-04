@@ -3,6 +3,7 @@ import simplejson
 import types
 import logging
 from random import randint
+from django.conf import settings
 
 log = logging.getLogger('pyshopzilla.ShopzillaAPI')
 hdlr = logging.StreamHandler()   # Logs to stderr by default
@@ -13,9 +14,14 @@ log.addHandler(hdlr)
 log.setLevel(logging.INFO)
 log.setLevel(logging.DEBUG)
 
-apikey = getattr(settings, "SHOPZILLA_API_KEY", 'DEFAULT_API_KEY')
-JSON_RESPONSE_FILE = getattr(settings, "SHOPZILLA_RESPONSE_LOGFILE", "/tmp/shopzilla.log")
-DEBUG = getattr(settings, "DEBUG", False)
+# try to load settings from a django project
+try:
+  from django.conf import settings
+  apikey = getattr(settings, "SHOPZILLA_API_KEY", 'DEFAULT_API_KEY')
+  JSON_RESPONSE_FILE = getattr(settings, "SHOPZILLA_RESPONSE_LOGFILE", "/tmp/shopzilla.log")
+  DEBUG = getattr(settings, "DEBUG", False)
+except ImportError:
+  apikey, JSON_RESPONSE_FILE, DEBUG = None, '/tmp/shopzilla.log', False
 
 _params = {
     'apiKey': '',
